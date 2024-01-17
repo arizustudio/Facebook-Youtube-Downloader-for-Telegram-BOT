@@ -4,7 +4,9 @@ All forms of risk of use and misuse of the program are beyond the responsibility
 Downloader credits to cobalt
 
 [!] Requires PHP7 or more<br/>
-[!] It is recommended to use the "screen" command if you use Linux (install using "yum install screen" or "sudo apt install screen")<br/>
+install "yum -y install php-cli php php-curl" or "sudo apt intall php-cli php php-curl"<br/>
+[!] It is recommended to use the "screen" command if you use Linux <br/>
+install using "yum install screen" or "sudo apt install screen"<br/>
 
 # How to Install
 git clone https://github.com/arizustudio/Facebook-Youtube-Downloader-for-Telegram-BOT.git<br/>
