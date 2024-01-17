@@ -1,7 +1,10 @@
 <?php
-error_reporting(0);
+error_reporting(0); 
 $telefile = trim(file_get_contents("telegtam_bot_token.txt"));
 define('BOT_TOKEN', $telefile);
+if(!is_dir("temps")){
+	mkdir("temps");
+}
 function detectCommand($text) {
     $pattern = '/^\/([a-zA-Z0-9_]+)(\s(.*))?$/';
     preg_match($pattern, $text, $matches);
@@ -80,7 +83,7 @@ function sendStream($chatId, $messageId, $videoPath){
     $url = "https://api.telegram.org/bot" . BOT_TOKEN . "/sendVideo";
     $params = [
         'chat_id' => $chatId,
-        'video' => new CURLFile("download/".$videoPath),
+        'video' => new CURLFile("temps/".$videoPath),
         'reply_to_message_id' => $messageId,
         'disable_notification' => true
     ];
@@ -105,7 +108,7 @@ function sendStreamAudio($chatId, $messageId, $audioPath){
     $url = "https://api.telegram.org/bot" . BOT_TOKEN . "/sendAudio";
     $params = [
         'chat_id' => $chatId,
-        'audio' => new CURLFile("download/".$audioPath),
+        'audio' => new CURLFile("temps/".$audioPath),
         'reply_to_message_id' => $messageId,
         'disable_notification' => true
     ];
@@ -188,7 +191,7 @@ function downloadVideo($url,$file){
 	if ($fileContent === false) {
 		return false;
 	}else{
-		file_put_contents("download/$file", $fileContent);
+		file_put_contents("temps/$file", $fileContent);
 		return true;
 	}
 }
@@ -273,7 +276,7 @@ List Commands:
 						$gabol = json_decode($req,true);
 						$filename = "youtube_".rand(1000,9999)."_".strtotime("now").".mp4";
 						if(downloadVideo($gabol['url'],"$filename") == true){
-							echo "[!] Download Success -> download/$filename\n";
+							echo "[!] Download Success -> temps/$filename\n";
 							if(sendStream($chatId, $messageId, "$filename") == true){
 								echo "[REPLY] To : $chatId -> (video_file)\n";
 							}else{
@@ -297,7 +300,7 @@ List Commands:
 						$gabol = json_decode($req,true);
 						$filename = "youtube_".rand(1000,9999)."_".strtotime("now").".mp4";
 						if(downloadVideo($gabol['url'],"$filename") == true){
-							echo "[!] Download Success -> download/$filename\n";
+							echo "[!] Download Success -> temps/$filename\n";
 							if(sendStreamAudio($chatId, $messageId, "$filename") == true){
 								echo "[REPLY] To : $chatId -> (video_file)\n";
 							}else{
@@ -305,7 +308,7 @@ List Commands:
 								echo "[REPLY] To : $chatId -> $respon\n";
 								sendMessage($chatId, $messageId, $respon);
 							}
-							if(unlink("download/$filename")){
+							if(unlink("temps/$filename")){
 								echo "[!] File Deleted\n";
 							}else{
 								echo "[!] Failed to Delete File\n";
