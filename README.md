@@ -1,6 +1,6 @@
 # Facebook-Youtube-Downloader-for-Telegram-BOT\n\n
 
-All forms of risk of use and misuse of the program are beyond the responsibility of Arizu Studio\n\n
+All forms of risk of use and misuse of the program are beyond the responsibility of Arizu Studio<br/>
 
 [!] Requires PHP7 or more\n
 [!] It is recommended to use the "screen" command if you use Linux (install using "yum install screen" or "sudo apt install screen")\n\n
