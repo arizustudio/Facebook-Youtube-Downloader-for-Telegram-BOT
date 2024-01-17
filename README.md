@@ -9,6 +9,9 @@ Downloader credits to cobalt
 # How to Install
 git clone https://github.com/arizustudio/Facebook-Youtube-Downloader-for-Telegram-BOT.git<br/>
 cd Facebook-Youtube-Downloader-for-Telegram-BOT<br/>
+
+// edit telegtam_bot_token.txt to your telegram bot token
+
 php receiver.php<br/>
 
 # Command List
