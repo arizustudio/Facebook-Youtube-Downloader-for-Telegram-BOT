@@ -1,5 +1,6 @@
 <?php
 error_reporting(0); 
+set_time_limit(0);
 $telefile = trim(file_get_contents("telegtam_bot_token.txt"));
 define('BOT_TOKEN', $telefile);
 if(!is_dir("temps")){
@@ -149,6 +150,8 @@ function getVideo($urlvideo){
     curl_setopt($ch, CURLOPT_FOLLOWLOCATION, false);
     curl_setopt($ch, CURLOPT_HTTPHEADER, $headers);
     curl_setopt($ch, CURLOPT_ENCODING, 'gzip, deflate');
+    curl_setopt($ch, CURLOPT_CONNECTTIMEOUT, 0); 
+	curl_setopt($ch, CURLOPT_TIMEOUT, 99999);
     $response = curl_exec($ch);
     curl_close($ch);
     return $response;
@@ -274,6 +277,7 @@ List Commands:
 						$proses_pesan = sendMessage($chatId, $messageId, $respon);
 						$req = getVideo($commandArguments);
 						$gabol = json_decode($req,true);
+						echo "[!] Vidio -> $gabol[url]\n";
 						$filename = "youtube_".rand(1000,9999)."_".strtotime("now").".mp4";
 						if(downloadVideo($gabol['url'],"$filename") == true){
 							echo "[!] Download Success -> temps/$filename\n";
@@ -298,13 +302,14 @@ List Commands:
 						$proses_pesan = sendMessage($chatId, $messageId, $respon);
 						$req = getYTMusic($commandArguments);
 						$gabol = json_decode($req,true);
+						echo "[!] Vidio -> $gabol[url]\n";
 						$filename = "youtube_".rand(1000,9999)."_".strtotime("now").".mp4";
 						if(downloadVideo($gabol['url'],"$filename") == true){
 							echo "[!] Download Success -> temps/$filename\n";
 							if(sendStreamAudio($chatId, $messageId, "$filename") == true){
 								echo "[REPLY] To : $chatId -> (video_file)\n";
 							}else{
-								$respon = "Server Gagal Mengirim Video\n";
+								$respon = "Server Gagal Mengirim Audio (try short duration)\n";
 								echo "[REPLY] To : $chatId -> $respon\n";
 								sendMessage($chatId, $messageId, $respon);
 							}
