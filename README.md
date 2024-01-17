@@ -4,7 +4,7 @@ All forms of risk of use and misuse of the program are beyond the responsibility
 Downloader credits to cobalt
 
 [!] Requires PHP7 or more<br/>
-install "yum -y install php-cli php php-curl" or "sudo apt intall php-cli php php-curl"<br/><br/>
+install "yum -y install php-cli php php-curl" or "sudo apt install php-cli php php-curl"<br/><br/>
 [!] It is recommended to use the "screen" command if you use Linux <br/>
 install using "yum install screen" or "sudo apt install screen"<br/>
 
