@@ -295,6 +295,11 @@ Auto add Flip Mirrored Video and add watermark to Downloaded Video";
 						echo "[REPLY] To : $chatId -> (help)\n";
 						sendMessage($chatId, $messageId, $respon);					
 					}else
+					if(!$url_videos){
+						$respon = "Perintah tidak sesuai! silahkan ceh /help";
+						echo "[REPLY] To : Perintah tidak sesuai! silahkan cek /help \n";
+						sendMessage($chatId, $messageId, $respon);
+					}else
 					if($commandName == 'download'){
 						$respon = "Proses..";
 						echo "[REPLY] To : $chatId -> $respon\n";
