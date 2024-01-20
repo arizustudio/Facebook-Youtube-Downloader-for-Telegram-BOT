@@ -22,5 +22,5 @@ Downlaod video from TikTok, Youtube, and Instagram.<br/><br/>
 Download Music from YouTube<br/><br/>
 - /watermark (video_link) (watermark_link)<br/>
 Auto add watermark to Downloaded Video<br/><br/>
-- /watermark_flip (video_link) (watermark_link)<br/>
+- /watermarkflip (video_link) (watermark_link)<br/>
 Auto add Flip Mirrored Video and add watermark to Downloaded Video
