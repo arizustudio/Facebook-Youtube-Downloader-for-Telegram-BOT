@@ -1,7 +1,7 @@
 # Facebook Intagram Youtube Downloader for Telegram BOT
 
 All forms of risk of use and misuse of the program are beyond the responsibility of Arizu Studio<br/>
-Downloader credits to cobalt
+Downloader credits to cobalt (https://github.com/wukko/cobalt)
 
 # System Requirements
 - Requires PHP7 or more<br/>
