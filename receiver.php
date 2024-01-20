@@ -362,7 +362,7 @@ Auto add Flip Mirrored Video and add watermark to Downloaded Video";
 						if(downloadFiles($gabol['url'],"$filename") == true){
 							echo "[!] Download Success -> temps/$filename\n";
 							echo "[!] Editing..\n";
-							shell_exec('start ffmpeg -i temps/'.$filename.' -i '.$wm.' -filter_complex "[1]colorchannelmixer=aa=0.75,scale=250:-1[wm];[0][wm]overlay=(main_w-overlay_w)/2:(main_h-overlay_h)/8,hflip;" render/'.$filename);
+							shell_exec('ffmpeg -i temps/'.$filename.' -i '.$wm.' -filter_complex "[1]colorchannelmixer=aa=0.75,scale=250:-1[wm];[0][wm]overlay=(main_w-overlay_w)/2:(main_h-overlay_h)/8,hflip;" render/'.$filename);
 							if(file_exists("render/$filename")){
 								echo "[!] Sending..\n";
 								if(sendStream($chatId, $messageId, "render/$filename") == true){
@@ -406,7 +406,7 @@ Auto add Flip Mirrored Video and add watermark to Downloaded Video";
 						if(downloadFiles($gabol['url'],"$filename") == true){
 							echo "[!] Download Success -> temps/$filename\n";
 							echo "[!] Editing..\n";
-							shell_exec('start ffmpeg -i temps/'.$filename.' -i '.$wm.' -filter_complex "[1]colorchannelmixer=aa=0.75,scale=250:-1[wm];[0][wm]overlay=(main_w-overlay_w)/2:(main_h-overlay_h)/8" render/'.$filename);
+							shell_exec('ffmpeg -i temps/'.$filename.' -i '.$wm.' -filter_complex "[1]colorchannelmixer=aa=0.75,scale=250:-1[wm];[0][wm]overlay=(main_w-overlay_w)/2:(main_h-overlay_h)/8" render/'.$filename);
 							if(file_exists("render/$filename")){
 								echo "[!] Sending..\n";
 								if(sendStream($chatId, $messageId, "render/$filename") == true){
