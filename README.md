@@ -9,7 +9,19 @@ install "yum -y install php-cli php php-curl" or "sudo apt install php-cli php p
 - FFMpeg binaries<br/>
 If you want to use the auto matermark & flip mirror video feature, you need binaries from FFMpeg
 
-# How to Install
+# Install FFMpeg in Linux
+- git clone https://git.ffmpeg.org/ffmpeg.git ffmpeg
+- cd ffmpeg
+- ./configure
+- make
+- make install
+
+# Install FFMpeg in Windows
+1. download https://www.gyan.dev/ffmpeg/builds/ffmpeg-git-essentials.7z
+2. extract file & rename folder name
+3. add to environment path YOUR_FFMPEG_FOLDER_LOCATION/bin/
+
+# How to Install Downloader
 - git clone https://github.com/arizustudio/Facebook-Youtube-Downloader-for-Telegram-BOT.git<br/>
 - cd Facebook-Youtube-Downloader-for-Telegram-BOT<br/>
 // edit telegtam_bot_token.txt to your telegram bot token
