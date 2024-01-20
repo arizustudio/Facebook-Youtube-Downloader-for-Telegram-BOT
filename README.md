@@ -7,7 +7,7 @@ Downloader credits to cobalt
 - Requires PHP7 or more<br/>
 install "yum -y install php-cli php php-curl" or "sudo apt install php-cli php php-curl"<br/><br/>
 - FFMpeg binaries<br/>
-If you want to use the auto flip mirror video feature, you need binaries from FFMpeg
+If you want to use the auto matermark & flip mirror video feature, you need binaries from FFMpeg
 
 # How to Install
 - git clone https://github.com/arizustudio/Facebook-Youtube-Downloader-for-Telegram-BOT.git<br/>
