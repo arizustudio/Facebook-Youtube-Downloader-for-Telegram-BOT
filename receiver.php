@@ -1,10 +1,14 @@
 <?php
 error_reporting(0); 
 set_time_limit(0);
+$dir = "dirname(__FILE__)";
 $telefile = trim(file_get_contents("telegtam_bot_token.txt"));
 define('BOT_TOKEN', $telefile);
 if(!is_dir("temps")){
 	mkdir("temps");
+}
+if(!is_dir("render")){
+	mkdir("render");
 }
 function detectCommand($text) {
     $pattern = '/^\/([a-zA-Z0-9_]+)(\s(.*))?$/';
@@ -84,7 +88,32 @@ function sendStream($chatId, $messageId, $videoPath){
     $url = "https://api.telegram.org/bot" . BOT_TOKEN . "/sendVideo";
     $params = [
         'chat_id' => $chatId,
-        'video' => new CURLFile("temps/".$videoPath),
+        'video' => new CURLFile($videoPath),
+        'reply_to_message_id' => $messageId,
+        'disable_notification' => true
+    ];
+    $ch = curl_init();
+    curl_setopt($ch, CURLOPT_URL, $url);
+    curl_setopt($ch, CURLOPT_POST, 1);
+    curl_setopt($ch, CURLOPT_POSTFIELDS, $params);
+    curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
+    curl_setopt($ch, CURLOPT_FOLLOWLOCATION, false);
+    curl_setopt($ch, CURLOPT_ENCODING, 'gzip, deflate');
+    curl_setopt($ch, CURLOPT_HTTPHEADER, array("Cache-Control: no-cache"));
+    $response = curl_exec($ch);
+    curl_close($ch);
+    $update = json_decode($response,true);
+	if ($update['ok'] == true) {
+		return true;
+	}else{
+		return false;
+	}
+}
+function sendDocument($chatId, $messageId, $videoPath){
+    $url = "https://api.telegram.org/bot" . BOT_TOKEN . "/sendDocument";
+    $params = [
+        'chat_id' => $chatId,
+        'document' => new CURLFile($videoPath),
         'reply_to_message_id' => $messageId,
         'disable_notification' => true
     ];
@@ -186,7 +215,7 @@ function getName($uri){
 	$meki = explode('?',$pisah);
 	return $meki[0];
 }
-function downloadVideo($url,$file){
+function downloadFiles($url,$file){
 	$ch = curl_init($url);
 	curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
 	curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, false);
@@ -210,6 +239,13 @@ function getMessage2($terbaru){
     curl_close($ch);
     return $response;
 }
+function addBacksound($video,$audio,$volume,$output){
+	if(file_exists("temps/$video")){
+		echo shell_exec('ffmpeg -i temps/'.$video.' -i '.$audio.' -filter_complex "[1:0]volume='.$volume.'[a1];[0:a][a1]amix=inputs=2:duration=first" -map 0:v:0 -y temps/'.$output.'.mp4');
+	}else{
+		return false;
+	}
+}
 mulai:
 $terbaru = file_get_contents('terbaru.txt');
 echo "[+] Get Update...\n";
@@ -230,7 +266,10 @@ if ($update['ok'] == true) {
 				$commandMatches = detectCommand($message);
 				if (!empty($commandMatches)) {
 					$commandName = $commandMatches[1];
-					$commandArguments = isset($commandMatches[3]) ? $commandMatches[3] : '';
+					$commandArguments = isset($commandMatches[3]) ? $commandMatches[3] : '';					
+					$pisahc = explode(' ',$commandArguments);
+					$url_videos = "$pisahc[0]";
+					$wm = "$pisahc[1]";
 					if($commandName == 'start'){
 						$respon = "Hello, Welcome to Arizu Video Downloader! Use the /help command to see the command list";	
 						echo "[REPLY] To : $chatId -> (intro)\n";
@@ -242,61 +281,47 @@ $respon = "Welcome to Video Downloader by Arizu Studio, don't forget to visit ht
 Our service uses the live api service from cobalt https://cobalt.tools/
 
 List Commands:
-/instagram (post_link)
-/youtube (video_link)
-/youtube_music (video_link)";	
+- /download (post_url)
+Downlaod video from TikTok, Youtube, and Instagram.
+
+- /music (youtube_url)
+Download Music from YouTube
+
+- /watermark (video_link) (watermark_link)
+Auto add watermark to Downloaded Video
+
+- /watermark_flip (video_link) (watermark_link)
+Auto add Flip Mirrored Video and add watermark to Downloaded Video";	
 						echo "[REPLY] To : $chatId -> (help)\n";
 						sendMessage($chatId, $messageId, $respon);					
 					}else
-					if($commandName == 'instagram'){
+					if($commandName == 'download'){
 						$respon = "Proses..";
 						echo "[REPLY] To : $chatId -> $respon\n";
 						$proses_pesan = sendMessage($chatId, $messageId, $respon);
-						$req = getVideo($commandArguments);
+						$req = getVideo($url_videos);
 						$gabol = json_decode($req,true);
 						echo "[!] Vidio -> $gabol[url]\n";
-						if(isset($gabol['url'])){
-							if(sendVideo($chatId, $messageId, $gabol['url']) == true){
-								echo "[REPLY] To : $chatId -> (video_file)\n";
-							}else{
-								$respon = "Server Gagal Mengirim Video";
-								echo "[REPLY] To : $chatId -> $respon\n";
-								sendMessage($chatId, $messageId, $respon);
-							}
-						}else{
-							$respon = "Link video tidak ditemukan!";
-							echo "[REPLY] To : $chatId -> $respon\n";
-							sendMessage($chatId, $messageId, $respon);
-						}
-						$proses_ekstrak = json_decode($proses_pesan,true);
-						deleteMessage($proses_ekstrak['result']['chat']['id'], $proses_ekstrak['result']['message_id']);
-					}else
-					if($commandName == 'youtube'){
-						$respon = "Proses..";
-						echo "[REPLY] To : $chatId -> $respon\n";
-						$proses_pesan = sendMessage($chatId, $messageId, $respon);
-						$req = getVideo($commandArguments);
-						$gabol = json_decode($req,true);
-						echo "[!] Vidio -> $gabol[url]\n";
-						$filename = "youtube_".rand(1000,9999)."_".strtotime("now").".mp4";
-						if(downloadVideo($gabol['url'],"$filename") == true){
+						$filename = "instagram_".rand(1000,9999)."_".strtotime("now").".mp4";
+						if(downloadFiles($gabol['url'],"$filename") == true){
 							echo "[!] Download Success -> temps/$filename\n";
-							if(sendStream($chatId, $messageId, "$filename") == true){
+							if(sendStream($chatId, $messageId, "temps/$filename") == true){
 								echo "[REPLY] To : $chatId -> (video_file)\n";
 							}else{
 								$respon = "Server Gagal Mengirim Video\n";
 								echo "[REPLY] To : $chatId -> $respon\n";
 								sendMessage($chatId, $messageId, $respon);
 							}
+							
 						}else{
 							$respon = "Server tidak dapat mengunduh video!\n";
 							echo "[REPLY] To : $chatId -> $respon\n";
-							sendMessage($chatId, $messageId, $respon);
+							unsendMessage($chatId, $messageId, $respon);
 						}
 						$proses_ekstrak = json_decode($proses_pesan,true);
 						deleteMessage($proses_ekstrak['result']['chat']['id'], $proses_ekstrak['result']['message_id']);
 					}else
-					if($commandName == 'youtube_music'){
+					if($commandName == 'music'){
 						$respon = "Proses..";
 						echo "[REPLY] To : $chatId -> $respon\n";
 						$proses_pesan = sendMessage($chatId, $messageId, $respon);
@@ -325,6 +350,94 @@ List Commands:
 						}
 						$proses_ekstrak = json_decode($proses_pesan,true);
 						deleteMessage($proses_ekstrak['result']['chat']['id'], $proses_ekstrak['result']['message_id']);
+					}else
+					if($commandName == 'watermark'){
+						$respon = "Proses..";
+						echo "[REPLY] To : $chatId -> $respon\n";
+						$proses_pesan = sendMessage($chatId, $messageId, $respon);
+						$req = getVideo($url_videos);
+						$gabol = json_decode($req,true);
+						echo "[!] Vidio -> $gabol[url]\n";
+						$filename = "instagram_".rand(1000,9999)."_".strtotime("now").".mp4";
+						if(downloadFiles($gabol['url'],"$filename") == true){
+							echo "[!] Download Success -> temps/$filename\n";
+							echo "[!] Editing..\n";
+							shell_exec('start ffmpeg -i temps/'.$filename.' -i '.$wm.' -filter_complex "[1]colorchannelmixer=aa=0.75,scale=250:-1[wm];[0][wm]overlay=(main_w-overlay_w)/2:(main_h-overlay_h)/8,hflip;" render/'.$filename);
+							if(file_exists("render/$filename")){
+								echo "[!] Sending..\n";
+								if(sendStream($chatId, $messageId, "render/$filename") == true){
+									echo "[REPLY] To : $chatId -> (video_file)\n";
+								}else{
+									$respon = "Server Gagal Mengirim Video\n";
+									echo "[REPLY] To : $chatId -> $respon\n";
+									sendMessage($chatId, $messageId, $respon);
+								}
+								if(unlink("render/$filename")){
+									echo "[!] Edited File Deleted\n";
+								}else{
+									echo "[!] Failed to Delete Edited File\n";
+								}
+							}else{
+								$respon = "Server Gagal Mengedit Video\n";
+								echo "[REPLY] To : $chatId -> $respon\n";
+								sendMessage($chatId, $messageId, $respon);
+							}
+							if(unlink("temps/$filename")){
+								echo "[!] Downloaded File Deleted\n";
+							}else{
+								echo "[!] Failed to Delete Downloaded File\n";
+							}
+						}else{
+							$respon = "Server tidak dapat mengunduh video!\n";
+							echo "[REPLY] To : $chatIds -> $respon\n";
+							unsendMessage($chatId, $messageId, $respon);
+						}
+						$proses_ekstrak = json_decode($proses_pesan,true);
+						deleteMessage($proses_ekstrak['result']['chat']['id'], $proses_ekstrak['result']['message_id']);
+					}else
+					if($commandName == 'watermark_flip'){
+						$respon = "Proses..";
+						echo "[REPLY] To : $chatId -> $respon\n";
+						$proses_pesan = sendMessage($chatId, $messageId, $respon);
+						$req = getVideo($url_videos);
+						$gabol = json_decode($req,true);
+						echo "[!] Vidio -> $gabol[url]\n";
+						$filename = "instagram_".rand(1000,9999)."_".strtotime("now").".mp4";
+						if(downloadFiles($gabol['url'],"$filename") == true){
+							echo "[!] Download Success -> temps/$filename\n";
+							echo "[!] Editing..\n";
+							shell_exec('start ffmpeg -i temps/'.$filename.' -i '.$wm.' -filter_complex "[1]colorchannelmixer=aa=0.75,scale=250:-1[wm];[0][wm]overlay=(main_w-overlay_w)/2:(main_h-overlay_h)/8" render/'.$filename);
+							if(file_exists("render/$filename")){
+								echo "[!] Sending..\n";
+								if(sendStream($chatId, $messageId, "render/$filename") == true){
+									echo "[REPLY] To : $chatId -> (video_file)\n";
+								}else{
+									$respon = "Server Gagal Mengirim Video\n";
+									echo "[REPLY] To : $chatId -> $respon\n";
+									sendMessage($chatId, $messageId, $respon);
+								}
+								if(unlink("render/$filename")){
+									echo "[!] Edited File Deleted\n";
+								}else{
+									echo "[!] Failed to Delete Edited File\n";
+								}
+							}else{
+								$respon = "Server Gagal Mengedit Video\n";
+								echo "[REPLY] To : $chatId -> $respon\n";
+								sendMessage($chatId, $messageId, $respon);
+							}
+							if(unlink("temps/$filename")){
+								echo "[!] Downloaded File Deleted\n";
+							}else{
+								echo "[!] Failed to Delete Downloaded File\n";
+							}
+						}else{
+							$respon = "Server tidak dapat mengunduh video!\n";
+							echo "[REPLY] To : $chatIds -> $respon\n";
+							unsendMessage($chatId, $messageId, $respon);
+						}
+						$proses_ekstrak = json_decode($proses_pesan,true);
+						deleteMessage($proses_ekstrak['result']['chat']['id'], $proses_ekstrak['result']['message_id']);
 					}else{
 						$respon = "Kode Perintah tidak ada!";
 						echo "[REPLY] To : $chatId -> $respon\n";
@@ -343,6 +456,7 @@ List Commands:
 			sleep(0.75);
 			goto mulai;
 		}
+		echo "===============================================================================\n";
 	}else{
 		echo "[!] No newest chat..\n";
 		sleep(0.75);
