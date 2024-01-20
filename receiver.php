@@ -290,7 +290,7 @@ Download Music from YouTube
 - /watermark (video_link) (watermark_link)
 Auto add watermark to Downloaded Video
 
-- /watermark_flip (video_link) (watermark_link)
+- /watermarkflip (video_link) (watermark_link)
 Auto add Flip Mirrored Video and add watermark to Downloaded Video";	
 						echo "[REPLY] To : $chatId -> (help)\n";
 						sendMessage($chatId, $messageId, $respon);					
@@ -395,7 +395,7 @@ Auto add Flip Mirrored Video and add watermark to Downloaded Video";
 						$proses_ekstrak = json_decode($proses_pesan,true);
 						deleteMessage($proses_ekstrak['result']['chat']['id'], $proses_ekstrak['result']['message_id']);
 					}else
-					if($commandName == 'watermark_flip'){
+					if($commandName == 'watermarkflip'){
 						$respon = "Proses..";
 						echo "[REPLY] To : $chatId -> $respon\n";
 						$proses_pesan = sendMessage($chatId, $messageId, $respon);
