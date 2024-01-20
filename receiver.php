@@ -316,7 +316,7 @@ Auto add Flip Mirrored Video and add watermark to Downloaded Video";
 						}else{
 							$respon = "Server tidak dapat mengunduh video!\n";
 							echo "[REPLY] To : $chatId -> $respon\n";
-							unsendMessage($chatId, $messageId, $respon);
+							deleteMessage($chatId, $messageId, $respon);
 						}
 						$proses_ekstrak = json_decode($proses_pesan,true);
 						deleteMessage($proses_ekstrak['result']['chat']['id'], $proses_ekstrak['result']['message_id']);
@@ -390,7 +390,7 @@ Auto add Flip Mirrored Video and add watermark to Downloaded Video";
 						}else{
 							$respon = "Server tidak dapat mengunduh video!\n";
 							echo "[REPLY] To : $chatIds -> $respon\n";
-							unsendMessage($chatId, $messageId, $respon);
+							deleteMessage($chatId, $messageId, $respon);
 						}
 						$proses_ekstrak = json_decode($proses_pesan,true);
 						deleteMessage($proses_ekstrak['result']['chat']['id'], $proses_ekstrak['result']['message_id']);
@@ -434,7 +434,7 @@ Auto add Flip Mirrored Video and add watermark to Downloaded Video";
 						}else{
 							$respon = "Server tidak dapat mengunduh video!\n";
 							echo "[REPLY] To : $chatIds -> $respon\n";
-							unsendMessage($chatId, $messageId, $respon);
+							deleteMessage($chatId, $messageId, $respon);
 						}
 						$proses_ekstrak = json_decode($proses_pesan,true);
 						deleteMessage($proses_ekstrak['result']['chat']['id'], $proses_ekstrak['result']['message_id']);
