@@ -334,7 +334,7 @@ Auto add Flip Mirrored Video and add watermark to Downloaded Video";
 						$gabol = json_decode($req,true);
 						echo "[!] Vidio -> $gabol[url]\n";
 						$filename = "youtube_".rand(1000,9999)."_".strtotime("now").".mp4";
-						if(downloadVideo($gabol['url'],"$filename") == true){
+						if(downloadFiles($gabol['url'],"$filename") == true){
 							echo "[!] Download Success -> temps/$filename\n";
 							if(sendStreamAudio($chatId, $messageId, "$filename") == true){
 								echo "[REPLY] To : $chatId -> (video_file)\n";
